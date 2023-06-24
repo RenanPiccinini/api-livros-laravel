@@ -42,4 +42,15 @@ class LivrosController extends Controller
         return $validator;
     }
 
+    public function pesquisarLivroApi(Request $request, $name)
+    {
+        $livro = Livro::where('name', $name)->first();
+
+        if (!$livro) {
+            return response()->json(['message' => 'Livro não encontrado'], 404);
+        }
+
+        return response()->json(['livro' => $livro], 200);
+    }
+
 }
