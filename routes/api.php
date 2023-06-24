@@ -29,4 +29,6 @@ Route::post('/logout-api', [LogoutController::class, 'logoutApi']);
 
 Route::post('/criar-livro-api', [LivrosController::class, 'criarLivroApi']);
 Route::get('/pesquisar-livro-api/{name}', [LivrosController::class, 'pesquisarLivroApi']);
+Route::put('/editar-livros-api/{id}', [LivrosController::class, 'editarLivroApi']);
+
 

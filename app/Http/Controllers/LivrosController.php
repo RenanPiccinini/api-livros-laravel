@@ -53,4 +53,27 @@ class LivrosController extends Controller
         return response()->json(['livro' => $livro], 200);
     }
 
+    public function editarLivroApi(Request $request, $id)
+    {
+        $validator = $this->validacoesLivro($request);
+
+        $livro = Livro::find($id);
+
+        if (!$livro) {
+            return response()->json(['message' => 'Livro não encontrado'], 404);
+        }
+
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
+        }else{
+            $livro->name = $request->input('name');
+            $livro->isbn = $request->input('isbn');
+            $livro->valor = $request->input('valor');
+            $livro->save();
+        }
+
+        return response()->json(['message' => 'Livro ' . $livro->name . ' atualizado com sucesso'], 200);
+    }
+
+
 }
