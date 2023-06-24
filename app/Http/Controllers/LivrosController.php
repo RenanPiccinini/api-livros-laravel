@@ -25,23 +25,6 @@ class LivrosController extends Controller
         return response()->json(['message' => 'Livro ' . $livro->name . ' registrado com sucesso!'], 201);
     }
 
-    public function validacoesLivro(Request $request)
-    {
-        $validator = Validator::make($request->all(), [
-            'name' => 'required',
-            'isbn' => 'required|numeric',
-            'valor' => 'required|numeric',
-        ], [
-            'name.required' => 'Campo nome do livro e obrigatorio',
-            'isbn.required' => 'Campo ISBN e obrigatorio',
-            'isbn.numeric' => 'Campo ISBN deve ser numerico',
-            'valor.required' => 'Campo Valor e obrigatorio',
-            'valor.numeric' => 'Campo Valor deve ser numerico',
-        ]);
-
-        return $validator;
-    }
-
     public function pesquisarLivroApi(Request $request, $name)
     {
         $livro = Livro::where('name', $name)->first();
@@ -73,6 +56,36 @@ class LivrosController extends Controller
         }
 
         return response()->json(['message' => 'Livro ' . $livro->name . ' atualizado com sucesso'], 200);
+    }
+
+    public function excluirLivroApi($id)
+    {
+        $livro = Livro::find($id);
+
+        if (!$livro) {
+            return response()->json(['message' => 'Livro não encontrado'], 404);
+        }
+
+        $livro->delete();
+
+        return response()->json(['message' => 'Livro excluído com sucesso'], 200);
+    }
+
+    public function validacoesLivro(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'name' => 'required',
+            'isbn' => 'required|numeric',
+            'valor' => 'required|numeric',
+        ], [
+            'name.required' => 'Campo nome do livro e obrigatorio',
+            'isbn.required' => 'Campo ISBN e obrigatorio',
+            'isbn.numeric' => 'Campo ISBN deve ser numerico',
+            'valor.required' => 'Campo Valor e obrigatorio',
+            'valor.numeric' => 'Campo Valor deve ser numerico',
+        ]);
+
+        return $validator;
     }
 
 
