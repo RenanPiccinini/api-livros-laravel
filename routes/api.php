@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\LivrosController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -23,3 +24,5 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
 Route::post('/register-api', [RegisterController::class, 'registerApi']);
 Route::post('/login-api', [LoginController::class, 'loginApi']);
+
+Route::post('/criar-livro-api', [LivrosController::class, 'criarLivroApi']);
