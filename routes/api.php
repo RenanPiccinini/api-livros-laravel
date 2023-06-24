@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\RegisterController;
+use App\Http\Controllers\LogoutController;
 
 /*
 |--------------------------------------------------------------------------
@@ -24,5 +25,6 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
 Route::post('/register-api', [RegisterController::class, 'registerApi']);
 Route::post('/login-api', [LoginController::class, 'loginApi']);
+Route::post('/logout-api', [LogoutController::class, 'logoutApi']);
 
 Route::post('/criar-livro-api', [LivrosController::class, 'criarLivroApi']);
