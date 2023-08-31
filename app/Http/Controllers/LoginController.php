@@ -3,26 +3,31 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
-use App\Providers\RouteServiceProvider;
-use Illuminate\Foundation\Auth\AuthenticatesUsers;
+use App\Services\AuthService;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 
 class LoginController extends Controller
 {
+    protected $authService;
+
+    public function __construct(AuthService $authService)
+    {
+        $this->authService = $authService;
+    }
+
     public function loginApi(Request $request)
     {
         $credentials = $request->only('email', 'password');
 
-        if (Auth::attempt($credentials)) {
-            $user = Auth::user();
+        if ($this->authService->attemptLogin($credentials)) {
+            $user = $this->authService->getUser();
 
             return response()->json([
                 'message' => 'Login realizado com sucesso!',
                 'Nome' => $user->name,
             ]);
         } else {
-            return response()->json(['message' => 'Credenciais invalidas'], 401);
+            return response()->json(['message' => 'Credenciais inválidas'], 401);
         }
     }
 }

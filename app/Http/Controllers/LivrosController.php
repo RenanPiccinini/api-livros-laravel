@@ -2,91 +2,54 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Livro;
+use App\Services\LivroService;
+use App\Repositories\LivroRepository;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Validator;
 
 class LivrosController extends Controller
 {
-    public function criarLivroApi(Request $request)
+    protected $livroService;
+    protected $livroRepository;
+
+    public function __construct(LivroService $livroService, LivroRepository $livroRepository)
     {
-        $validator = $this->validacoesLivro($request);
-
-        if ($validator->fails()) {
-            return response()->json(['errors' => $validator->errors()], 422);
-        }else{
-            $livro = new Livro;
-            $livro->name = $request->name;
-            $livro->isbn = $request->isbn;
-            $livro->valor = $request->valor;
-            $livro->save();
-        }
-
-        return response()->json(['message' => 'Livro ' . $livro->name . ' registrado com sucesso!'], 201);
+        $this->livroService = $livroService;
+        $this->livroRepository = $livroRepository;
     }
+
+    public function criarLivroApi(Request $request)
+{
+    $dados = $request->all();
+    $resultado = $this->livroService->criarLivro($dados);
+
+    if (isset($resultado['message'])) {
+        return response()->json($resultado['message'], $resultado['status']);
+    } else {
+        return response()->json($resultado['errors'], $resultado['status']);
+    }
+}
+
+
 
     public function pesquisarLivroApi(Request $request, $name)
     {
-        $livro = Livro::where('name', $name)->first();
+        $resultado = $this->livroService->pesquisarLivro($name);
 
-        if (!$livro) {
-            return response()->json(['message' => 'Livro não encontrado'], 404);
-        }
-
-        return response()->json(['livro' => $livro], 200);
+        return response()->json($resultado['livro'], $resultado['status']);
     }
 
     public function editarLivroApi(Request $request, $id)
     {
-        $validator = $this->validacoesLivro($request);
+        $dados = $request->all();
+        $resultado = $this->livroService->editarLivro($id, $dados);
 
-        $livro = Livro::find($id);
-
-        if (!$livro) {
-            return response()->json(['message' => 'Livro não encontrado'], 404);
-        }
-
-        if ($validator->fails()) {
-            return response()->json(['errors' => $validator->errors()], 422);
-        }else{
-            $livro->name = $request->input('name');
-            $livro->isbn = $request->input('isbn');
-            $livro->valor = $request->input('valor');
-            $livro->save();
-        }
-
-        return response()->json(['message' => 'Livro ' . $livro->name . ' atualizado com sucesso'], 200);
+        return response()->json($resultado['message'], $resultado['status']);
     }
 
     public function excluirLivroApi($id)
     {
-        $livro = Livro::find($id);
+        $resultado = $this->livroService->excluirLivro($id);
 
-        if (!$livro) {
-            return response()->json(['message' => 'Livro não encontrado'], 404);
-        }
-
-        $livro->delete();
-
-        return response()->json(['message' => 'Livro excluído com sucesso'], 200);
+        return response()->json($resultado['message'], $resultado['status']);
     }
-
-    public function validacoesLivro(Request $request)
-    {
-        $validator = Validator::make($request->all(), [
-            'name' => 'required',
-            'isbn' => 'required|numeric',
-            'valor' => 'required|numeric',
-        ], [
-            'name.required' => 'Campo nome do livro e obrigatorio',
-            'isbn.required' => 'Campo ISBN e obrigatorio',
-            'isbn.numeric' => 'Campo ISBN deve ser numerico',
-            'valor.required' => 'Campo Valor e obrigatorio',
-            'valor.numeric' => 'Campo Valor deve ser numerico',
-        ]);
-
-        return $validator;
-    }
-
-
 }
